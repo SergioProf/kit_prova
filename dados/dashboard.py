@@ -105,8 +105,22 @@ else:
             {"media_observada": "Média observada", "media_padronizada": "Média padronizada"}
         )
         base_comparacao = alt.Chart(comparacao_longa).encode(
-            x=alt.X("preco_medio:Q", title="Preço médio no recorte (R$)", axis=alt.Axis(format="$,.0f")),
-            y=alt.Y("neighbourhood:N", title="Bairro", sort=ordem_bairros),
+            x=alt.X(
+                "preco_medio:Q",
+                title="Preço médio no recorte (R$)",
+                scale=alt.Scale(domain=[300, 850]),
+                axis=alt.Axis(
+                    format="$,.0f",
+                    values=list(range(300, 851, 25)),
+                    labelExpr="datum.value % 50 === 0 ? '$' + datum.value : ''",
+                ),
+            ),
+            y=alt.Y(
+                "neighbourhood:N",
+                title="Bairro",
+                sort=ordem_bairros,
+                scale=alt.Scale(padding=0.1),
+            ),
         )
         linhas = base_comparacao.mark_line(color="#A9B3B1", strokeWidth=2).encode(
             detail="neighbourhood:N",
@@ -130,7 +144,7 @@ else:
         )
         st.altair_chart(
             (linhas + pontos).properties(
-                title="Preço antes e depois de padronizar o tipo de hospedagem", height=330
+                title="Preço antes e depois de padronizar o tipo de hospedagem", height=300
             ),
             width="stretch",
         )
